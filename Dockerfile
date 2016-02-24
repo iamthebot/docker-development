@@ -11,49 +11,26 @@ RUN yum -y update
 RUN yum -y install net-tools wget
 
 #Install C/C++/Fortran Development Tools
-RUN yum -y group install "Development Tools" && yum -y install clang clang++ cmake automake vim ctags
+RUN yum -y --skip-broken group install "Development Tools" && yum -y install clang clang++ cmake automake pkgconfig
 
 #Install basic python development tools
-RUN yum -y install python-pip python-devel && pip install --upgrade pip
-RUN pip install flake8
+RUN yum -y install python-pip python34 python34-devel python-devel postgresql-devel && pip install --upgrade pip && curl https://bootstrap.pypa.io/get-pip.py | python3.4
+RUN pip install flake8 psycopg2 && pip3 install neovim
 
-#Install basic python libraries
-RUN yum -y install postgresql-devel && pip install psycopg2
-
-#Install Golang
+#Install Golang and gocode
 RUN yum -y install go
 ENV PATH $PATH:/root/workdir/go/bin
 ENV GOPATH /root/workdir/go
 VOLUME /root/workdir
+RUN go get -v github.com/nsf/gocode
 
-#Pull vimrc
-RUN wget https://raw.githubusercontent.com/iamthebot/docker-enterprise-development/master/.vimrc
-#vim pathogen
-RUN mkdir -p /root/.vim/autoload ~/.vim/bundle && curl -LSso ~/.vim/autoload/pathogen.vim https://tpo.pe/pathogen.vim
-#vim cobalt color scheme
-RUN mkdir -p /root/.vim/colors && curl -LSso /root/.vim/colors/cobalt.vim https://raw.githubusercontent.com/sfsekaran/cobalt.vim/master/colors/cobalt.vim 
-#vim cobaltish color scheme
-RUN mkdir -p /root/.vim/colors && curl -LSso /root/.vim/colors/cobaltish.vim https://raw.githubusercontent.com/flazz/vim-colorschemes/master/colors/cobaltish.vim
+#Install universal-ctags
+RUN mkdir -p /root/build && git clone https://github.com/universal-ctags/ctags.git /root/build/ctags && cd /root/build/ctags && ./autogen.sh && ./configure && make && make install && cd /root/build && rm -rf /root/build/ctags
 
-#install nerdtree vim file explorer
-RUN mkdir -p /root/.vim/bundle
-RUN git clone https://github.com/scrooloose/nerdtree.git /root/.vim/bundle/nerdtree
-#install vim airline
-RUN git clone https://github.com/bling/vim-airline.git /root/.vim/bundle/vim-airline
-#install vim YouCompleteMe
-RUN git clone https://github.com/Valloric/YouCompleteMe.git /root/.vim/bundle/YouCompleteMe
-WORKDIR /root/.vim/bundle/YouCompleteMe
-RUN git submodule update --init --recursive
-RUN ./install.sh --clang-completer --gocode-completer
-WORKDIR /
-#install vim Autoformat
-RUN git clone https://github.com/Chiel92/vim-autoformat.git /root/.vim/bundle/vim-autoformat
-#install vim Fugitive
-RUN git clone https://github.com/tpope/vim-fugitive.git /root/.vim/bundle/vim-fugitive
-#install vim gitgutter
-RUN git clone https://github.com/airblade/vim-gitgutter.git /root/.vim/bundle/vim-gitgutter
-#install vim-go
-RUN git clone https://github.com/fatih/vim-go.git /root/.vim/bundle/vim-go
-#install tagbar
-RUN git clone https://github.com/majutsushi/tagbar.git /root/.vim/bundle/tagbar
-RUN echo "alias ls='ls --color'" >> /root/.bashrc
+#Install Neovim
+RUN git clone https://github.com/neovim/neovim.git /root/build/neovim && cd /root/build/neovim && make clean && make CMAKE_BUILD_TYPE=Release && make install && cd && rm -rf /root/build/neovim && rm -rf /root/build/ && nvim +PlugInstall +UpdateRemotePlugins +qall
+
+#Move dotfile
+ADD init.vim ~/.config/nvim/init.vim
+
+RUN echo "alias ls='ls --color'" >> /root/.bashrc && echo 'export TERM=xterm-256color' >> /root/.bashrc && echo "alias vim='nvim'" >> /root/.bashrc
