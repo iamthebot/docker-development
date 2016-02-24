@@ -1,24 +1,10 @@
 FROM centos:latest
-ENV VNUM 1.00
+ENV VNUM 1.01
 
-#Install EPEL
-RUN yum -y install epel-release
+#Install Development Tools
+RUN yum -y install epel-release && yum -y update RUN yum -y --skip-broken group install "Development Tools" && yum -y install boost boost-devel clang clang++ cmake automake pkgconfig net-tools wget go python-pip python34 python34-devel python-devel postgresql-devel && pip install --upgrade pip && curl https://boostrap.pypa.io/get-pip.py | python3.4 && pip install flake8 psycopg2 && pip3 install neovim
 
-#Bring packages up to date
-RUN yum -y update
 
-#Install basic net tools
-RUN yum -y install net-tools wget
-
-#Install C/C++/Fortran Development Tools
-RUN yum -y --skip-broken group install "Development Tools" && yum -y install clang clang++ cmake automake pkgconfig
-
-#Install basic python development tools
-RUN yum -y install python-pip python34 python34-devel python-devel postgresql-devel && pip install --upgrade pip && curl https://bootstrap.pypa.io/get-pip.py | python3.4
-RUN pip install flake8 psycopg2 && pip3 install neovim
-
-#Install Golang and gocode
-RUN yum -y install go
 ENV PATH $PATH:/root/workdir/go/bin
 ENV GOPATH /root/workdir/go
 VOLUME /root/workdir

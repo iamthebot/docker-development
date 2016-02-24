@@ -8,22 +8,15 @@ endif
 call plug#begin()
 
 Plug 'gergap/wombat256'
-
-Plug 'shougo/deoplete.nvim'
-
 Plug 'Rip-Rip/clang_complete'
-
 Plug 'vim-airline/vim-airline'
-
 Plug 'majutsushi/tagbar'
-
 Plug 'scrooloose/nerdtree'
-
 Plug 'airblade/vim-gitgutter'
-
 Plug 'vim-airline/vim-airline-themes'
-
 Plug 'Chiel92/vim-autoformat'
+Plug 'dcharbon/vim-flatbuffers'
+Plug 'Valloric/YouCompleteMe', { 'do': 'python2 install.py --clang-completer --gocode-completer --system-libclang' }
 
 call plug#end()
 
@@ -54,12 +47,15 @@ set hlsearch
 set incsearch
 set noerrorbells
 set novisualbell
-set t_vb=
 set tm=500
-set t_Co=256
 set ai "Auto indent
 set si "Smart indent
 set wrap "Wrap lines
+set tabstop=4
+set expandtab
+set shiftwidth=4
+set foldmethod=syntax
+:let mapleader = ","
 map j gj
 map k gk
 autocmd BufReadPost *
