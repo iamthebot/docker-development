@@ -2,7 +2,7 @@ FROM centos:latest
 ENV VNUM 1.01
 
 #Install Development Tools
-RUN yum -y install epel-release && yum -y update && yum -y --skip-broken group install "Development Tools" && yum -y install boost boost-devel clang clang++ cmake automake pkgconfig net-tools wget go python-pip python34 python34-devel python-devel postgresql-devel && pip install --upgrade pip && curl https://boostrap.pypa.io/get-pip.py | python3.4 && pip install flake8 psycopg2 && pip3 install neovim
+RUN yum -y install epel-release && yum -y update && yum -y --skip-broken group install "Development Tools" && yum -y install boost boost-devel clang clang++ cmake automake pkgconfig net-tools wget go python-pip python34 python34-devel python-devel postgresql-devel && pip install --upgrade pip && curl https://bootstrap.pypa.io/get-pip.py | python3.4 && pip install flake8 psycopg2 && pip3 install neovim
 
 
 ENV PATH $PATH:/root/workdir/go/bin
